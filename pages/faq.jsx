@@ -1,7 +1,19 @@
-import HeroServices from "../components/HeroServices";
-
+import HeroFAQ from "../components/HeroFAQ";
+import { driver as Driver } from "driver.js";
+import "driver.js/dist/driver.css"
+import { useEffect } from "react";
 
 export default function FAQ() {
+    useEffect(() => {
+        const driver = new Driver({
+            popoverClass: 'driverjs-theme',
+            showProgress: true,
+            steps: [
+              { element: '#faq', popover: { title: 'FAQ', description: 'Beberapa pertanyaan yang sering ditanyakan terkait tentang Pakar' } },
+            ]
+        });
+        driver.drive();
+    }, []);
     const pakarFAQ = [
         {
             question: "Apa itu Pameran Karya (PAKAR)?",
@@ -46,9 +58,9 @@ export default function FAQ() {
     ];
     return <>
         <main className="container mx-auto p-4 pt-28 min-h-max">
-            <section id="services" className="relative flex flex-col justify-center lg:flex-col-reverse lg:justify-around items-center mx-auto mb-4">
+            <section className="relative flex flex-col justify-center lg:flex-col-reverse lg:justify-around items-center mx-auto mb-4">
                 <div className="w-full max-w-3xl fixed top-24 -z-10 opacity-10">
-                    <HeroServices />
+                    <HeroFAQ />
                 </div>
                 <div className=" text-center">
                     <div className="mx-auto">
@@ -58,7 +70,7 @@ export default function FAQ() {
                 </div>
             </section>
 
-            <div className="max-w-lg mx-auto mt-10 gap-2 flex flex-col">
+            <div className="max-w-lg mx-auto mt-10 gap-2 flex flex-col"  id="faq">
                 {
                     pakarFAQ.map((faq, index) => (<div key={index} className="collapse collapse-plus bg-base-200 border border-primary">
                         {index === 0 ? (<input type="radio" name="my-accordion-3" defaultChecked='checked' />) : (<input type="radio" name="my-accordion-3" />)}

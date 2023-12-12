@@ -1,11 +1,24 @@
 import HeroServices from "../components/HeroServices";
 import { MdOutlineAttachMoney, MdOutlineDesignServices } from "react-icons/md";
 import { TbLicense } from "react-icons/tb";
+import { driver as Driver } from "driver.js";
+import "driver.js/dist/driver.css"
+import { useEffect } from "react";
 
 export default function Services() {
+    useEffect(() => {
+        const driver = new Driver({
+            popoverClass: 'driverjs-theme',
+            showProgress: true,
+            steps: [
+              { element: '#services', popover: { title: 'Layanan', description: 'Beberapa layanan yang ditawarkan oleh Pakar' } },
+            ]
+        });
+        driver.drive();
+    }, []);
     return <>
-        <main className="container mx-auto p-4 pt-28 min-h-max">
-            <section id="services" className="relative flex flex-col justify-center lg:flex-col-reverse lg:justify-around items-center mx-auto mb-4">
+        <main className="container mx-auto p-4 pt-28 min-h-max" id="services">
+            <section className="relative flex flex-col justify-center lg:flex-col-reverse lg:justify-around items-center mx-auto mb-4">
                 <div className="w-full max-w-3xl fixed top-24 -z-10 opacity-10">
                     <HeroServices />
                 </div>

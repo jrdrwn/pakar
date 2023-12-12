@@ -1,6 +1,20 @@
 import HeroAbout from "../components/HeroAbout";
+import { driver as Driver } from "driver.js";
+import "driver.js/dist/driver.css"
+import { useEffect } from "react";
 
 export default function About() {
+    useEffect(() => {
+        const driver = new Driver({
+            popoverClass: 'driverjs-theme',
+            showProgress: true,
+            steps: [
+              { element: '#about', popover: { title: 'Tentang Kami', description: 'Menjelaskan lebih lanjut tentang apa itu Pakar?' } },
+              {element: '.stats', popover: { title: 'Statistik', description: 'Menampilkan statistik karya yang ada di Pakar'}} 
+            ]
+        });
+        driver.drive();
+    }, []);
     return <>
         <main className="container mx-auto p-4 pt-28 min-h-max">
             <section id="about" className="relative flex flex-col justify-center lg:flex-col-reverse lg:justify-around items-center mx-auto">
