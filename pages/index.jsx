@@ -4,29 +4,26 @@ import { driver as Driver } from "driver.js"
 import "driver.js/dist/driver.css"
 
 function Home() {
-  const driverDesktop = new Driver({
+  const driver = new Driver({
     popoverClass: 'driverjs-theme',
-    showProgress: true,
-    steps: [
-      { element: '.navbar', popover: { title: 'Header', description: 'Menyajikan informasi-informasi penting tentang halaman web' } }, 
-      { element: '.navbar-start', popover: { title: 'Brand Logo', description: 'Logo dari brand yang bersangkutan, dalam konteks ini Pakar' } },
-      { element: '.navbar-center', popover: { title: 'Navigation', description: 'Menu navigasi yang berisi link-link yang mengarah ke halaman lain' } },
-      { element: '.navbar-end', popover: { title: 'Login', description: 'Menu untuk login atau sign up' } },
-      { element: '#hero', popover: { title: 'Hero', description: 'bagian teratas dari suatu halaman web yang biasanya mencakup elemen-elemen besar dan menonjol untuk menarik perhatian pengguna' } },
-      {element: 'footer', popover: { title: 'Footer', description: 'Bagian bawah dari suatu halaman web yang biasanya berisi informasi-informasi penting lainnya' } }
-    ]
+    showProgress: true
   });
-  const driverMobile = new Driver({
-    popoverClass: 'driverjs-theme',
-    showProgress: true,
-    steps: [
-      { element: '.navbar', popover: { title: 'Header', description: 'Menyajikan informasi-informasi penting tentang halaman web' } }, 
-      { element: '.navbar-start', popover: { title: 'Brand Logo', description: 'Logo dari brand yang bersangkutan, dalam konteks ini Pakar' } },
-      { element: '#btn-mobile', popover: { title: 'Hamburger Menu', description: 'Untuk Membuka Navigasi ke halaman lain dan melakukan login atau signup' } },
-      { element: '#hero', popover: { title: 'Hero', description: 'bagian teratas dari suatu halaman web yang biasanya mencakup elemen-elemen besar dan menonjol untuk menarik perhatian pengguna' } },
-      {element: 'footer', popover: { title: 'Footer', description: 'Bagian bawah dari suatu halaman web yang biasanya berisi informasi-informasi penting lainnya' } }
-    ]
-  });
+  const desktopSteps = [
+    { element: '.navbar', popover: { title: 'Header', description: 'Menyajikan informasi-informasi penting tentang halaman web' } },
+    { element: '.navbar-start', popover: { title: 'Brand Logo', description: 'Logo dari brand yang bersangkutan, dalam konteks ini Pakar' } },
+    { element: '.navbar-center', popover: { title: 'Navigation', description: 'Menu navigasi yang berisi link-link yang mengarah ke halaman lain' } },
+    { element: '.navbar-end', popover: { title: 'Login', description: 'Menu untuk login atau sign up' } },
+    { element: '#hero', popover: { title: 'Hero', description: 'bagian teratas dari suatu halaman web yang biasanya mencakup elemen-elemen besar dan menonjol untuk menarik perhatian pengguna' } },
+    { element: 'footer', popover: { title: 'Footer', description: 'Bagian bawah dari suatu halaman web yang biasanya berisi informasi-informasi penting lainnya' } }
+  ]
+  const mobileSteps = [
+    { element: '.navbar', popover: { title: 'Header', description: 'Menyajikan informasi-informasi penting tentang halaman web' } },
+    { element: '.navbar-start', popover: { title: 'Brand Logo', description: 'Logo dari brand yang bersangkutan, dalam konteks ini Pakar' } },
+    { element: '#btn-mobile', popover: { title: 'Hamburger Menu', description: 'Untuk Membuka Navigasi ke halaman lain dan melakukan login atau signup' } },
+    { element: '#hero', popover: { title: 'Hero', description: 'bagian teratas dari suatu halaman web yang biasanya mencakup elemen-elemen besar dan menonjol untuk menarik perhatian pengguna' } },
+    { element: 'footer', popover: { title: 'Footer', description: 'Bagian bawah dari suatu halaman web yang biasanya berisi informasi-informasi penting lainnya' } }
+  ]
+
   return (
     <main className="container mx-auto p-4 pt-28 min-h-max">
       <section id="hero" className="flex flex-col lg:flex-row-reverse lg:justify-around items-center  mx-auto">
@@ -39,8 +36,8 @@ function Home() {
             <li> <span><MdCheckCircleOutline /> </span>  Menjual </li>
           </ul>
           <div>
-            <button className="btn btn-primary hidden lg:block" onClick={() => driverDesktop.drive()}>Ayo Mulai Tour Sekarang!</button>
-            <button className="btn btn-primary lg:hidden" onClick={() => driverMobile.drive()}>Ayo Mulai Tour Sekarang!</button>
+            <button className="btn btn-primary lg:hidden" onClick={() => { driver.setSteps(mobileSteps); driver.drive() }}>Ayo Mulai Tour Sekarang!</button>
+            <button className="btn btn-primary hidden lg:block" onClick={() => { driver.setSteps(desktopSteps); driver.drive() }}>Ayo Mulai Tour Sekarang! 0</button>
           </div>
         </div>
         <div className="w-full max-w-[600px]">
