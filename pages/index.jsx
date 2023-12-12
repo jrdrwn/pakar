@@ -37,7 +37,7 @@ function Home() {
           </ul>
           <div>
             <button className="btn btn-primary lg:hidden" onClick={() => { driver.setSteps(mobileSteps); driver.drive() }}>Ayo Mulai Tour Sekarang!</button>
-            <button className="btn btn-primary hidden lg:block" onClick={() => { driver.setSteps(desktopSteps); driver.drive() }}>Ayo Mulai Tour Sekarang! 0</button>
+            <button className="btn btn-primary hidden lg:block" onClick={() => { driver.setSteps(desktopSteps); driver.drive() }}>Ayo Mulai Tour Sekarang!</button>
           </div>
         </div>
         <div className="w-full max-w-[600px]">
