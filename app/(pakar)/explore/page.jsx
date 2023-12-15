@@ -1,103 +1,88 @@
-'use client';
+"use client";
 
 import { FaRegUserCircle } from "react-icons/fa";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { MdAttachMoney, MdMoneyOff, } from "react-icons/md"
+import CardSummary from "../../../components/karya/CardSummary";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-
-    const [isLiked, setIsLiked] = useState(false);
-
-
-
-    return <main className="p-4">
-        <section className="flex justify-between py-2 px-2 items-center border border-primary bg-base-300 shadow rounded-xl">
-            <div>
-                <button className="btn btn-ghost">
-                    <span className="relative inline-block before:absolute before:-inset-1 before:block before:-skew-y-3 before:bg-primary">
-                        <span className="relative text-primary-content text-xl">PaKar</span>
-                    </span>
-                </button>
-            </div>
-            <div className="flex-1 text-center">
-                <input type="search" placeholder="Cari Karya Terbaik Anda..." className="input input-bordered w-full max-w-md" />
-            </div>
-            <div>
-                <button className="btn btn-ghost"><FaRegUserCircle size={32} /></button>
-            </div>
-        </section>
-        <section className="my-8">
-            <div className="flex justify-center py-2 px-2 items-center gap-2 mt-2 flex-wrap">
-                <button className="btn btn-sm btn-primary">Semua</button>
-                <button className="btn btn-sm btn-ghost">Projek Mandiri</button>
-                <button className="btn btn-sm btn-ghost">Tugas Mata Kuliah</button>
-                <button className="btn btn-sm btn-ghost">Tugas Akhir</button>
-                <button className="btn btn-sm btn-ghost">Kerajinan Tangan</button>
-            </div>
-        </section>
-        <section className="flex gap-4">
-            <div className="flex-1 max-w-sm hover:outline-primary hover:outline hover:outline-1 rounded-md p-2 cursor-pointer">
-                <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                        <FaRegUserCircle size={24} />
-                        <span className="">@username</span>
-                    </div>
-                    <div>
-                        <button className="btn btn-ghost  btn-sm ">
-                            Apache-2.0
-                            <MdAttachMoney className="text-primary" size={18} />
-                        </button>
-                    </div>
-                </div>
-                <div className="h-60 rounded-md overflow-hidden mb-2">
-                    <img src={"https://picsum.photos/seed/picsum/200/300"} alt="Karya Image" className="object-center object-cover w-full " />
-                </div>
-                <div className="flex justify-between mb-2">
-                    <div>
-                        {
-                            isLiked ? <FaHeart size={24} onClick={() => setIsLiked(!isLiked)} /> : <FaRegHeart size={24} onClick={() => setIsLiked(!isLiked)} />
-                        }
-                    </div>
-                    <div className="flex gap-1">
-                        <span>Rp200.000,00</span>
-                    </div>
-                </div>
-                <div className="line-clamp-2 text-xl font-bold">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam veniam distinctio, nihil hic beatae ipsum numquam fugiat eligendi ex laudantium aliquid ullam id deleniti quis voluptatem qui ipsa ab. Atque!
-                </div>
-            </div>
-            <div className="flex-1 max-w-sm hover:outline-primary hover:outline hover:outline-1 rounded-md p-2 cursor-pointer">
-                <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                        <FaRegUserCircle size={24} />
-                        <span className="">@username</span>
-                    </div>
-                    <div>
-                        <button className="btn btn-ghost  btn-sm ">
-                            Unlicense
-                            <MdMoneyOff className="text-primary" size={18} />
-                        </button>
-                    </div>
-                </div>
-                <div className="h-60 rounded-md overflow-hidden mb-2">
-                    <img src={"https://picsum.photos/seed/picsum/200/300"} alt="Karya Image" className="object-center object-cover w-full " />
-                </div>
-                <div className="flex justify-between mb-2">
-                    <div>
-                        {
-                            isLiked ? <FaHeart size={24} onClick={() => setIsLiked(!isLiked)} /> : <FaRegHeart size={24} onClick={() => setIsLiked(!isLiked)} />
-                        }
-                    </div>
-                    <div className="flex gap-1">
-                        <span>GRATIS</span>
-                    </div>
-                </div>
-                <div className="line-clamp-2 text-xl font-bold">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam veniam distinctio, nihil hic beatae ipsum numquam fugiat eligendi ex laudantium aliquid ullam id deleniti quis voluptatem qui ipsa ab. Atque!
-                </div>
-            </div>
-        </section>
-    </main >
+  const searchParams = useSearchParams();
+  const [q, setQ] = useState("");
+  const [karya, setKarya] = useState([]);
+  useEffect(() => {
+    fetch("/api/karya?tag=" + searchParams.get("tag") ?? "Semua")
+      .then((res) => res.json())
+      .then((data) => setKarya(data));
+  }, [searchParams.get("tag")]);
+  return (
+    <main className="p-4">
+      <section className="flex items-center justify-between rounded-xl border border-primary bg-base-300 px-2 py-2 shadow">
+        <div>
+          <button className="btn btn-ghost">
+            <span className="relative inline-block before:absolute before:-inset-1 before:block before:-skew-y-3 before:bg-primary">
+              <span className="relative text-xl text-primary-content">
+                PaKar
+              </span>
+            </span>
+          </button>
+        </div>
+        <div className="flex-1 text-center">
+          <input
+            type="search"
+            onInput={(e) => setQ(e.target.value)}
+            placeholder="Cari Karya Terbaik Anda..."
+            className="input input-bordered w-full max-w-md"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Link href={"/karya/add"}>
+            <button className="btn btn-ghost">Tambah Karya</button>
+          </Link>
+          <Link href={"/profile"}>
+            <button className="btn btn-ghost">
+              <FaRegUserCircle size={32} />
+            </button>
+          </Link>
+        </div>
+      </section>
+      <section className="my-8">
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2 px-2 py-2">
+          {[
+            { tag: "Semua" },
+            { tag: "projek-mandiri" },
+            { tag: "tugas-mata-kuliah" },
+            { tag: "tugas-akhir" },
+            { tag: "kerajinan-tangan" },
+          ].map((data) => (
+            <Link
+              key={data.tag}
+              href={`${
+                data.tag === "Semua" ? "/explore" : `/explore?tag=${data.tag}`
+              }`}
+            >
+              <button
+                className={`btn capitalize ${
+                  searchParams.get("tag") === data.tag ||
+                  (searchParams.get("tag") === null && data.tag === "Semua")
+                    ? "btn-primary"
+                    : ""
+                } btn-sm`}
+              >
+                {data.tag.split("-").join(" ")}
+              </button>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="flex flex-wrap justify-around gap-4">
+        {karya?.map((data) => {
+          if (q === "") return <CardSummary key={data.karya_id} {...data} />;
+          if (data.title.toLowerCase().includes(q.toLowerCase()))
+            return <CardSummary key={data.karya_id} {...data} />;
+        })}
+      </section>
+    </main>
+  );
 }
