@@ -8,18 +8,12 @@ import {
 import Hero from "../../components/media/Hero";
 import { driver as Driver } from "driver.js";
 import "driver.js/dist/driver.css";
-import { useEffect } from "react";
 import HeroAbout from "../../components/media/HeroAbout";
 import HeroServices from "../../components/media/HeroServices";
 import { TbLicense } from "react-icons/tb";
 import HeroFAQ from "../../components/media/HeroFAQ";
 
 function Home() {
-  useEffect(() => {
-    fetch("/api/")
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-  }, []);
   const driver = new Driver({
     popoverClass: "driverjs-theme",
     showProgress: true,

@@ -1,6 +1,4 @@
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import "../global.css";
+import "../styles/global.css";
 
 export const metadata = {
   title: "Home",

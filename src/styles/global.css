@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-}
-
 .driver-popover.driverjs-theme {
   background-color: oklch(0.686283 0.185567 148.959);
   color: #000;
