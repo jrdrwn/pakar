@@ -21,10 +21,7 @@ export default function Header() {
         <div className="navbar-center hidden lg:block">
           <nav className="flex gap-4  [&_button]:btn [&_button]:btn-ghost">
             {links.map((link, index) => (
-              <Link
-                href={`/${link === "Home" ? "" : link.toLocaleLowerCase()}`}
-                key={index}
-              >
+              <Link href={`/#${link.toLocaleLowerCase()}`} key={index}>
                 <button>{link}</button>
               </Link>
             ))}
@@ -57,10 +54,7 @@ export default function Header() {
       >
         <nav className="flex w-full flex-col items-center justify-center gap-1 py-2 [&_button]:btn [&_button]:btn-ghost ">
           {links.map((link, index) => (
-            <Link
-              href={`/${link === "Home" ? "" : link.toLocaleLowerCase()}`}
-              key={index}
-            >
+            <Link href={`/#${link.toLocaleLowerCase()}`} key={index}>
               <button key={index}>{link}</button>
             </Link>
           ))}
