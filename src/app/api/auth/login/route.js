@@ -6,12 +6,13 @@ export async function POST(request) {
   url.pathname = "/explore";
   //prettier-ignore
   const { password, email } = await request.json();
-  const user = await prisma.user.findUnique({ where: { email, password } });
+  const user = await prisma.users.findUnique({ where: { email, password } });
   console.log(user);
   if (!user) {
     return NextResponse.json({ success: false }, { status: 401 });
   }
-  return NextResponse.redirect(url, {
-    headers: { "Set-Cookie": `user_id=${user.user_id};path=/` },
+  return NextResponse.json({
+    redirect: url,
+    cookies: "user_id=${user.user_id};path=/",
   });
 }

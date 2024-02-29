@@ -1,18 +1,36 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaHeart, FaRegHeart, FaRegUserCircle } from "react-icons/fa";
-import { MdMoneyOff } from "react-icons/md";
+import { FaRegUserCircle } from "react-icons/fa";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 export default function Page() {
   const params = useParams();
   const [karya, setKarya] = useState();
+  const [isLike, setIsLike] = useState();
+  const [likesCount, setLikesCount] = useState();
+
   useEffect(() => {
     fetch(`/api/karya/${params.karyaid}`)
       .then((res) => res.json())
-      .then((data) => setKarya(data[0]));
+      .then((data) => {
+        setKarya(data[0]);
+        setIsLike(Number(data[0].is_user_like));
+        setLikesCount(data[0].likes_count);
+      });
   }, []);
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+    const res = await fetch(`/api/karya/${karya?.karya_id}/like`, {
+      method: isLike ? "DELETE" : "PUT",
+    });
+    if (res.ok) {
+      setLikesCount(isLike ? likesCount - 1 : likesCount + 1);
+      setIsLike(!isLike);
+    }
+  };
   return (
     <main>
       <section className="mx-auto max-w-2xl p-4">
@@ -27,14 +45,12 @@ export default function Page() {
             </div>
           </div>
           <div>
-            <span className="badge badge-primary">{karya?.main_category}</span>
+            <span className="badge badge-primary">{karya?.category}</span>
           </div>
         </div>
         <div className="mb-2 h-96 flex-1 overflow-hidden rounded-md ">
           <img
-            src={
-              karya?.image.split("|")[0] || "https://via.placeholder.com/150"
-            }
+            src={karya?.image || "https://via.placeholder.com/150"}
             alt="Karya Image"
             className="w-full object-cover object-center "
           />
@@ -44,14 +60,29 @@ export default function Page() {
         </div>
         <div className="mb-4 text-xl font-bold">{karya?.title}</div>
         <p>{karya?.about}</p>
-        <div className="my-4 text-lg font-medium">Specification</div>
-        {karya?.specification.split("|").map((spec) => (
-          <div className="mb-2 flex items-center gap-2">
-            <span className="badge badge-primary badge-outline badge-sm">
-              {spec}
+        <div className="mt-2 flex justify-between">
+          <button
+            className="btn btn-ghost btn-xs flex items-center gap-1"
+            onClick={handleLike}
+          >
+            {isLike ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
+            <span className="text-sm">
+              {new Intl.NumberFormat("id-ID", {
+                notation: "compact",
+                compactDisplay: "short",
+              }).format(likesCount)}
             </span>
-          </div>
-        ))}
+          </button>
+          {/* <div className="mt-4 flex items-center gap-1">
+            <MdOutlineVisibility size={18} />
+            <span className="text-sm">
+              {new Intl.NumberFormat("id-ID", {
+                notation: "compact",
+                compactDisplay: "short",
+              }).format(karya?.visitior ?? 0)}
+            </span>
+          </div> */}
+        </div>
       </section>
     </main>
   );

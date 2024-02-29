@@ -8,22 +8,29 @@ datasource db {
 }
 
 model karya {
-  karya_id      Int     @id @default(autoincrement())
-  about         String? @db.Text
-  specification String? @db.Text
-  title         String  @db.LongText
-  image         String? @db.LongText
-  price         String
-  main_category String
-  sub_category  String?
-  side_category String?
-  author        Int
-  user          user    @relation(fields: [author], references: [user_id], map: "Karya_author_fkey")
+  karya_id    Int        @id @default(autoincrement())
+  about       String?    @db.Text
+  title       String     @db.LongText
+  image       String?    @db.LongText
+  price       String     @default("1")
+  category_id Int        @db.UnsignedInt
+  author      Int
+  visitor     Int        @default(0)
+  categories  categories @relation(fields: [category_id], references: [category_id], map: "FK_karya_category")
+  user        users      @relation(fields: [author], references: [user_id], map: "Karya_author_fkey")
+  likes       likes[]
 
   @@index([author], map: "Karya_author_fkey")
+  @@index([category_id], map: "category_id")
 }
 
-model user {
+model categories {
+  category_id Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique(map: "name") @db.VarChar(100)
+  karya       karya[]
+}
+
+model users {
   user_id     Int     @id @default(autoincrement())
   username    String  @unique(map: "User_username_key")
   password    String
@@ -31,5 +38,19 @@ model user {
   last_name   String?
   middle_name String?
   email       String  @unique(map: "User_email_key")
+  image       String? @db.VarChar(256)
   karya       karya[]
+  likes       likes[]
+}
+
+model likes {
+  like_id  Int   @id @default(autoincrement()) @db.UnsignedInt
+  user_id  Int
+  karya_id Int
+  karya    karya @relation(fields: [karya_id], references: [karya_id], map: "FK__karya")
+  users    users @relation(fields: [user_id], references: [user_id], map: "FK__users")
+
+  @@unique([user_id, karya_id], map: "user_id_karya_id")
+  @@index([karya_id], map: "karya_id")
+  @@index([user_id], map: "user_id")
 }

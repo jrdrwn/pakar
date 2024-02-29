@@ -7,7 +7,7 @@ export async function POST(request) {
   //prettier-ignore
   const { first_name, middle_name, last_name, password, email, username } = await request.json();
   try {
-    await prisma.user.upsert({
+    await prisma.users.upsert({
       create: {
         first_name,
         middle_name,
@@ -22,7 +22,7 @@ export async function POST(request) {
       },
       update: {},
     });
-    return NextResponse.redirect(url);
+    return NextResponse.json({ redirect: url });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ success: false }, { status: 400 });

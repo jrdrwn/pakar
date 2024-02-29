@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { FaRegUserCircle } from "react-icons/fa";
-import DataTable, { defaultThemes } from "react-data-table-component";
 import {
-  Chart as ChartJS,
-  Tooltip,
   BarElement,
   CategoryScale,
+  Chart as ChartJS,
   LinearScale,
   Title,
+  Tooltip,
 } from "chart.js";
+import { useEffect, useMemo, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { useCookies } from "react-cookie";
+import DataTable from "react-data-table-component";
+import { FaRegUserCircle } from "react-icons/fa";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -20,11 +21,13 @@ const FilterComponent = ({ filterText, onFilter, onClear }) => (
     <input
       className="input input-bordered"
       id="search"
-      type="text"
+      type="search"
       placeholder="Filter By Name"
       aria-label="Search Input"
       value={filterText}
       onChange={onFilter}
+      autoComplete="off"
+      autoCorrect="off"
     />
     <button className="btn btn-square" type="button" onClick={onClear}>
       X
@@ -33,6 +36,7 @@ const FilterComponent = ({ filterText, onFilter, onClear }) => (
 );
 
 export default function Page() {
+  const [cookies, setCookie] = useCookies(["user_id"]);
   const [categoryCount, setCategoryCount] = useState([]);
   const [profile, setProfile] = useState({});
   const openModal = () => {
@@ -41,7 +45,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetch("/api/karya/category-list?length=true")
+    fetch("/api/karya/categories?count=true&limit=10&q=")
       .then((res) => res.json())
       .then((data) => {
         setCategoryCount(data);
@@ -70,7 +74,7 @@ export default function Page() {
     fetch("/api/profile")
       .then((res) => res.json())
       .then((data) => setProfile(data[0]));
-    fetch("/api/karya?tag=me&limit=7000&offset=0")
+    fetch("/api/karya?tag=me")
       .then((res) => res.json())
       .then((data) => {
         data.sort((a, b) => b.price - a.price);
@@ -100,39 +104,6 @@ export default function Page() {
       />
     );
   }, [filterText, resetPaginationToggle]);
-
-  const customStyles = {
-    header: {
-      style: {
-        minHeight: "56px",
-      },
-    },
-    headRow: {
-      style: {
-        borderTopStyle: "solid",
-        borderTopWidth: "1px",
-        borderTopColor: defaultThemes.default.divider.default,
-      },
-    },
-    headCells: {
-      style: {
-        "&:not(:last-of-type)": {
-          borderRightStyle: "solid",
-          borderRightWidth: "1px",
-          borderRightColor: defaultThemes.default.divider.default,
-        },
-      },
-    },
-    cells: {
-      style: {
-        "&:not(:last-of-type)": {
-          borderRightStyle: "solid",
-          borderRightWidth: "1px",
-          borderRightColor: defaultThemes.default.divider.default,
-        },
-      },
-    },
-  };
 
   const [selectedRows, setSelectedRows] = useState(false);
   const [toggledClearRows, setToggleClearRows] = useState(false);
@@ -166,13 +137,6 @@ export default function Page() {
       maxWidth: "400px",
     },
     {
-      name: "Specification",
-      sortable: true,
-      reorder: true,
-      selector: (row) => row.specification,
-      maxWidth: "200px",
-    },
-    {
       name: "Price",
       sortable: true,
       reorder: true,
@@ -195,11 +159,11 @@ export default function Page() {
       ),
     },
     {
-      name: "Main Category",
+      name: "Category",
       sortable: true,
       reorder: true,
       center: true,
-      selector: (row) => row.main_category,
+      selector: (row) => row.category,
     },
   ];
 
@@ -222,10 +186,22 @@ export default function Page() {
             <div className="h-4 w-[2px] bg-primary"></div>
             <div>
               <button
-                className="btn btn-ghost btn-sm"
+                className="btn btn-warning btn-sm"
                 onClick={() => openModal()}
               >
                 Edit Profile
+              </button>
+            </div>
+            <div className="h-4 w-[2px] bg-primary"></div>
+            <div>
+              <button
+                className="btn btn-error btn-sm"
+                onClick={() => {
+                  setCookie("user_id", "", { path: "/" });
+                  location.replace("/");
+                }}
+              >
+                Logout
               </button>
             </div>
           </div>
@@ -239,7 +215,7 @@ export default function Page() {
               plugins: {
                 title: {
                   display: true,
-                  text: "Most Categories",
+                  text: "Top 10 Categories",
                   color: "oklch(0.753513, 0.138989, 232.66148)",
                   fullSize: true,
                   font: {
@@ -263,8 +239,7 @@ export default function Page() {
               },
             }}
             data={{
-              labels:
-                categoryCount && categoryCount.map((c) => c.main_category),
+              labels: categoryCount && categoryCount.map((c) => c.category),
               datasets: [
                 {
                   data: categoryCount && categoryCount.map((c) => c.count),
@@ -278,7 +253,6 @@ export default function Page() {
           {karya && (
             <DataTable
               title="Karya"
-              customStyles={customStyles}
               columns={columns}
               data={filteredItems}
               theme="dark"

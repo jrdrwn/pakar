@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 export default function HeroServices(props) {
   return (
     <svg

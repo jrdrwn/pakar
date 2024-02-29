@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MdMenu, MdClose } from "react-icons/md";
+import { MdClose, MdMenu } from "react-icons/md";
 
 export default function Header() {
   const [open, setOpen] = useState(false);

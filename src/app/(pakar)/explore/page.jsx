@@ -1,50 +1,61 @@
 "use client";
 
-import { FaRegUserCircle } from "react-icons/fa";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { FaRegUserCircle } from "react-icons/fa";
 import CardSummary from "../../../components/karya/CardSummary";
-import { useRef } from "react";
 
 export default function Page() {
   const [q, setQ] = useState("");
   const [karya, setKarya] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [cookies, setCookie, removeCookie] = useCookies();
 
   useEffect(() => {
-    fetch("/api/karya/category-list")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/karya/categories?q=`)
       .then((res) => res.json())
-      .then((data) => setTags(["Semua", ...data]));
+      .then((data) =>
+        setCategories([{ category_id: 0, name: "Semua" }, ...data]),
+      );
 
     fetch(
-      `/api/karya?tag=${encodeURIComponent(
-        selectedCategory,
-      )}&limit=10&offset=0`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/karya?user_id=${
+        cookies["user_id"]
+      }&tag=${encodeURIComponent(selectedCategory)}&limit=10&offset=0`,
     )
       .then((res) => res.json())
       .then((data) => setKarya(data));
   }, []);
 
   useEffect(() => {
+    setIsEnd(false);
+
     fetch(
-      `/api/karya?tag=${encodeURIComponent(
-        selectedCategory,
-      )}&limit=10&offset=0`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/karya?user_id=${
+        cookies["user_id"]
+      }&tag=${encodeURIComponent(selectedCategory)}&limit=10&offset=0`,
     )
       .then((res) => res.json())
       .then((data) => setKarya(data));
   }, [selectedCategory]);
-
+  const [isEnd, setIsEnd] = useState(false);
   const fetchMoreData = () => {
     fetch(
-      `/api/karya?tag=${encodeURIComponent(selectedCategory)}&limit=10&offset=${
+      `${process.env.NEXT_PUBLIC_API_URL}/api/karya?user_id=${
+        cookies["user_id"]
+      }&tag=${encodeURIComponent(selectedCategory)}&limit=10&offset=${
         karya.length
       }`,
     )
       .then((res) => res.json())
-      .then((data) => setKarya((karya) => [...karya, ...data]));
+      .then((data) => {
+        if (data.length === 0) {
+          setIsEnd(true);
+        }
+        setKarya((karya) => [...karya, ...data]);
+      });
   };
 
   const bottom = useRef(null);
@@ -52,7 +63,7 @@ export default function Page() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          fetchMoreData();
+          !isEnd && fetchMoreData();
         }
       },
       {
@@ -113,14 +124,14 @@ export default function Page() {
           <option disabled defaultValue>
             Select Category
           </option>
-          {tags.map((tag) => (
-            <option key={tag} value={tag}>
-              {tag}
+          {categories.map(({ category_id, name }) => (
+            <option key={category_id} value={name}>
+              {name}
             </option>
           ))}
         </select>
       </section>
-      <section className="flex min-h-screen flex-wrap justify-center gap-4">
+      <section className="flex min-h-screen flex-wrap justify-evenly gap-8">
         {karya?.map((data) => {
           if (q === "") return <CardSummary key={data.karya_id} {...data} />;
           if (data.title.toLowerCase().includes(q.toLowerCase()))

@@ -1,11 +1,18 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { useCookies } from "react-cookie";
-import { FaHeart, FaRegHeart, FaRegUserCircle } from "react-icons/fa";
-
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaRegUserCircle } from "react-icons/fa";
+import {
+  MdDeleteOutline,
+  MdFavorite,
+  MdFavoriteBorder,
+  MdInfo,
+  MdOutlineEdit,
+} from "react-icons/md";
 export default function CardSummary(props) {
   const [cookies] = useCookies(["user_id"]);
-
   const openModal = (e) => {
     // prevent paren event bubbling
     e.stopPropagation();
@@ -51,55 +58,95 @@ export default function CardSummary(props) {
       location.reload();
     }
   };
+
+  const [isLike, setIsLike] = useState(Number(props.is_user_like));
+  const [likesCount, setLikesCount] = useState(props.likes_count);
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+    const res = await fetch(`/api/karya/${props.karya_id}/like`, {
+      method: isLike ? "DELETE" : "PUT",
+    });
+    if (res.ok) {
+      setLikesCount(isLike ? likesCount - 1 : likesCount + 1);
+      setIsLike(!isLike);
+    }
+  };
+
   return (
     <>
-      <Link href={`/explore/${props.karya_id}`}>
-        <div
-          data-karya-id={props.karya_id}
-          className=" w-96 max-w-sm cursor-pointer rounded-md p-2 hover:outline hover:outline-1 hover:outline-primary"
-        >
-          <div className="mb-2 flex justify-between">
-            <div className="flex items-center gap-2">
-              <FaRegUserCircle size={24} />
-              <span className="">@{props.username}</span>
-            </div>
-            <div>
-              <span className="badge badge-primary">{props.main_category}</span>
-            </div>
-          </div>
-          <div className="mb-2 h-60 overflow-hidden rounded-md">
-            <img
-              src={props.image.split("|")[0]}
-              alt="Karya Image"
-              className="w-full object-cover object-center "
-            />
-          </div>
-          <div className="mb-2 flex justify-between">
-            <div>
-              <span className="badge badge-primary badge-outline  badge-sm">
-                {new Date().toDateString()}
-              </span>
-            </div>
-            {cookies.user_id === props.user_id && (
-              <div className="flex gap-2">
-                <button
-                  className="btn btn-ghost btn-xs"
-                  onClick={(e) => openModalDelete(e)}
-                >
-                  Delete
+      <div
+        data-karya-id={props.karya_id}
+        className="h-min w-96 max-w-sm cursor-pointer rounded-md p-2 hover:outline hover:outline-1 hover:outline-primary"
+      >
+        <div className="relative mb-2 h-60 overflow-hidden rounded-md">
+          <details className="dropdown dropdown-end absolute right-2 top-2">
+            <summary
+              role="button"
+              className="btn btn-circle btn-outline btn-xs  m-1"
+            >
+              <BsThreeDotsVertical size={20} />
+            </summary>
+            <ul className="menu dropdown-content menu-xs z-[1] rounded-box bg-base-100  shadow">
+              <li>
+                <button onClick={(e) => openModal(e)}>
+                  <MdOutlineEdit size={20} /> Edit
                 </button>
-                <button
-                  className="btn btn-ghost btn-xs"
-                  onClick={(e) => openModal(e)}
-                >
-                  Edit
+              </li>
+              <li>
+                <button onClick={(e) => openModalDelete(e)}>
+                  <MdDeleteOutline size={20} /> Delete{" "}
                 </button>
-              </div>
-            )}
-          </div>
-          <div className="line-clamp-2 text-lg font-medium">{props.title}</div>
+              </li>
+              <li>
+                <Link href={`/explore/${props.karya_id}`}>
+                  <MdInfo size={20} /> Detail
+                </Link>
+              </li>
+            </ul>
+          </details>
+          <img
+            src={props.image}
+            alt={props.title}
+            className="w-full object-cover object-center "
+          />
         </div>
-      </Link>
+        <div className="mb-2 flex justify-between">
+          <div className="flex items-center gap-1">
+            <FaRegUserCircle size={20} />
+            <span className="">@{props.username}</span>
+          </div>
+          <div>
+            <span className="badge badge-primary badge-outline">
+              {props.category}
+            </span>
+          </div>
+        </div>
+        <div className="line-clamp-1 text-lg font-medium">{props.title}</div>
+        <div className="mt-2 flex justify-between">
+          <button
+            className="btn btn-ghost btn-xs flex items-center gap-1"
+            onClick={handleLike}
+          >
+            {isLike ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
+            <span className="text-sm">
+              {new Intl.NumberFormat("id-ID", {
+                notation: "compact",
+                compactDisplay: "short",
+              }).format(likesCount)}
+            </span>
+          </button>
+          {/* <div className="flex items-center gap-1">
+            <MdOutlineVisibility size={18} />
+            <span className="text-sm">
+              {new Intl.NumberFormat("id-ID", {
+                notation: "compact",
+                compactDisplay: "short",
+              }).format(props.visitior ?? 0)}
+            </span>
+          </div> */}
+        </div>
+      </div>
       <dialog id={`delete-karya-modal-${props.karya_id}`} className="modal">
         <div className="modal-box">
           <form method="dialog">

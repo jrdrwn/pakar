@@ -1,7 +1,8 @@
 "use client";
 
+import { useClickAway } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
-import { useCookies } from "react-cookie";
+import { useEffect, useState } from "react";
 import { FaBattleNet } from "react-icons/fa";
 
 export default function Page() {
@@ -20,9 +21,23 @@ export default function Page() {
       alert("Gagal menambahkan karya!");
     } else {
       alert("Berhasil menambahkan karya!");
-      response.redirected && router.push(response.url);
+      router.push((await response.json()).redirect);
     }
   };
+
+  const [categories, setCategories] = useState([]);
+  const [q, setQ] = useState("");
+
+  useEffect(() => {
+    fetch(`/api/karya/categories?q=${q}`)
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, [q]);
+
+  const [showAutoComplete, setShowAutoComplete] = useState(false);
+  const ref = useClickAway(() => {
+    setShowAutoComplete(false);
+  });
   return (
     <div className="flex min-h-screen items-center justify-center">
       <section className="max-w-sm flex-1 rounded-xl border border-primary bg-base-300 py-8 text-center">
@@ -50,12 +65,12 @@ export default function Page() {
             </label>
             <label className="form-control mx-auto w-full max-w-xs">
               <div className="label">
-                <span className="label-text">Link Cover</span>
+                <span className="label-text">Gambar</span>
               </div>
               <input
                 type="text"
-                name="cover"
-                placeholder="Masukkan Link Cover..."
+                name="image"
+                placeholder="Masukkan Link Gambar..."
                 className="input input-bordered input-primary w-full max-w-xs"
               />
               <div className="label">
@@ -63,23 +78,59 @@ export default function Page() {
                 <span className="label-text-alt"></span>
               </div>
             </label>
-            <label className="form-control mx-auto w-full max-w-xs">
+            <label
+              className="form-control relative mx-auto w-full max-w-xs"
+              ref={ref}
+            >
               <div className="label">
-                <span className="label-text">Tag</span>
+                <span className="label-text">Category</span>
               </div>
-              <select
-                name="tag"
-                className="select select-bordered select-primary"
+              <input
+                onFocus={(e) => {
+                  setShowAutoComplete(true);
+                }}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                }}
+                type="text"
+                name="category"
+                value={q}
+                placeholder="Masukkan Category..."
+                className="input input-bordered input-primary w-full max-w-xs"
+              />
+              <div
+                className={`absolute top-full -mt-2 max-h-36 w-full flex-col items-start overflow-hidden overflow-y-scroll rounded-lg border border-primary bg-base-100 px-4 py-2 ${
+                  showAutoComplete ? "flex" : "hidden"
+                } `}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (e.target.classList.contains("btn")) {
+                    setQ(
+                      e.target.textContent
+                        .replace("Add", "")
+                        .replace(/"/g, "")
+                        .trim(),
+                    );
+                    setShowAutoComplete(false);
+                  }
+                }}
               >
-                <option disabled selected>
-                  Pilih Tag
-                </option>
-                <option value="projek-mandiri">Projek Mandiri</option>
-                <option value="tugas-mata-kuliah">Tugas Mata Kuliah</option>
-                <option value="tugas-akhir">Tugas Akhir</option>
-                <option value="kerajinan-tangan">Kerajinan Tangan</option>
-                <option value="other">Lainnya</option>
-              </select>
+                {q !== "" && (
+                  <div className="btn btn-primary btn-sm w-full">Add "{q}"</div>
+                )}
+                {categories.map((category) => (
+                  <div
+                    className="btn btn-ghost btn-sm w-full"
+                    key={category.category_id}
+                  >
+                    {category.name}
+                  </div>
+                ))}
+              </div>
+              <div className="label">
+                <span className="label-text-alt"></span>
+                <span className="label-text-alt"></span>
+              </div>
             </label>
             <label className="form-control mx-auto w-full max-w-xs">
               <div className="label">
@@ -88,7 +139,7 @@ export default function Page() {
               <textarea
                 className="textarea textarea-bordered textarea-primary h-24"
                 placeholder="Deskripsikan Karya Anda..."
-                name="description"
+                name="about"
               ></textarea>
             </label>
             <button

@@ -2,6 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+.rdt_TableHeader,
+.rdt_TableHeader + header,
+.rdt_Table,
+.rdt_TableHeadRow,
+.rdt_TableRow,
+.rdt_Pagination {
+  @apply bg-transparent !important;
+}
+.rdt_TableHeader > :nth-child(2) {
+  @apply rounded bg-primary text-primary-content;
+}
+.rdt_TableHeadRow {
+  @apply border-t-0 !important;
+}
+.rdt_TableRow:not(:last-child),
+.rdt_TableHeadRow {
+  @apply border-b border-neutral !important;
+}
+.rdt_Table {
+  @apply rounded-xl border border-primary;
+}
+
+.rdt_TableCol:not(:last-child) {
+  @apply border-r border-r-primary;
+}
+.rdt_TableRow:hover {
+  @apply rounded-xl outline outline-1 outline-primary;
+}
+.rdt_TableCol {
+  @apply text-primary;
+}
+
+.rdt_TableCol_Sortable {
+  @apply cursor-pointer;
+}
+
+.rdt_TableCell:not(:last-child) {
+  @apply border-r border-r-primary text-base-content;
+}
+
+.rdt_ExpanderRow {
+  @apply border-none;
+}
+
+.rdt_Pagination {
+  @apply border-none text-primary !important;
+}
+
+.rdt_Pagination select {
+  @apply select select-primary select-xs;
+}
+.rdt_Pagination select + svg {
+  display: none;
+}
+:is(.rdt_TableCol, .rdt_TableCell) input[type="checkbox"] {
+  @apply checkbox-primary checkbox;
+}
+
 .driver-popover.driverjs-theme {
   background-color: oklch(0.686283 0.185567 148.959);
   color: #000;
