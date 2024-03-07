@@ -13,6 +13,7 @@ import { Bar } from "react-chartjs-2";
 import { useCookies } from "react-cookie";
 import DataTable from "react-data-table-component";
 import { FaRegUserCircle } from "react-icons/fa";
+import { MdUpload } from "react-icons/md";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -39,6 +40,8 @@ export default function Page() {
   const [cookies, setCookie] = useCookies(["user_id"]);
   const [categoryCount, setCategoryCount] = useState([]);
   const [profile, setProfile] = useState({});
+  const [image, setImage] = useState("");
+  const [uploadImageLoading, setUploadImageLoading] = useState(false);
 
   const openModal = () => {
     const modal = document.getElementById("edit-profile-modal");
@@ -176,7 +179,15 @@ export default function Page() {
       <main className="container mx-auto px-4 pb-8">
         <section className="relative mx-auto  pt-24">
           <div className="absolute -top-14 h-28  w-28 rounded-full">
-            <FaRegUserCircle size={112} />
+            {profile.image ? (
+              <img
+                src={profile.image || image}
+                alt=""
+                className="h-28 w-28 rounded-full object-cover object-center"
+              />
+            ) : (
+              <FaRegUserCircle size={112} />
+            )}
           </div>
           <h1 className="mb-4 text-4xl font-bold">
             {profile.first_name} {profile.middle_name} {profile.last_name}
@@ -280,6 +291,63 @@ export default function Page() {
           </form>
           <h3 className="text-lg font-bold">Edit Profile</h3>
           <form onSubmit={handleEditProfile}>
+            <label className="form-control" htmlFor="upload-image">
+              <div className="label">
+                <span className="label-text">Cover</span>
+              </div>
+              <div className="">
+                {(profile.image || image) && (
+                  <img
+                    src={profile.image || image}
+                    alt=""
+                    className="mb-2 h-36 w-full rounded-md object-cover"
+                  />
+                )}
+                <div className="btn btn-outline btn-primary w-full">
+                  {uploadImageLoading ? (
+                    <div className="loading loading-ring" />
+                  ) : (
+                    <>
+                      <MdUpload size={24} /> Upload
+                    </>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  name="image"
+                  value={profile.image || image}
+                  hidden
+                />
+                <input
+                  id="upload-image"
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={async (e) => {
+                    setUploadImageLoading(true);
+                    const file = e.target.files[0];
+                    const formData = new FormData();
+                    formData.append("image", file);
+                    const response = await fetch("/api/imagekit", {
+                      method: "POST",
+                      body: formData,
+                    });
+
+                    if (!response.ok) {
+                      alert("Gagal mengupload gambar!");
+                    } else {
+                      const json = await response.json();
+                      setImage(json.url);
+                    }
+                    setUploadImageLoading(false);
+                  }}
+                />
+              </div>
+              <div className="label">
+                <span className="label-text-alt"></span>
+                <span className="label-text-alt"></span>
+              </div>
+            </label>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Nama Depan</span>

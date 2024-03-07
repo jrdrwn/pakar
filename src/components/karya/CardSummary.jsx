@@ -117,7 +117,14 @@ export default function CardSummary(props) {
         </div>
         <div className="mb-2 flex justify-between">
           <div className="flex items-center gap-1">
-            <FaRegUserCircle size={20} />
+            {props.image ? (
+              <img
+                src={props.user_image}
+                className="h-5 w-5 rounded-full object-cover "
+              />
+            ) : (
+              <FaRegUserCircle size={20} />
+            )}
             <span className="">@{props.username}</span>
           </div>
           <div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { FaRegUserCircle } from "react-icons/fa";
+import { FaPlus, FaRegUserCircle } from "react-icons/fa";
 import CardSummary from "../../../components/karya/CardSummary";
 
 export default function Page() {
@@ -12,8 +12,13 @@ export default function Page() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [cookies] = useCookies();
+  const [profile, setProfile] = useState({});
 
   useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => setProfile(data));
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/karya/categories?q=`)
       .then((res) => res.json())
       .then((data) =>
@@ -99,11 +104,21 @@ export default function Page() {
         <div className="flex-1 text-center"></div>
         <div className="flex items-center gap-2">
           <Link href={"/karya/add"}>
-            <button className="btn btn-ghost">Tambah Karya</button>
+            <button className="btn btn-primary">
+              <FaPlus size={20} />
+              Tambah Karya
+            </button>
           </Link>
           <Link href={"/profile"}>
             <button className="btn btn-ghost">
-              <FaRegUserCircle size={32} />
+              {profile.image ? (
+                <img
+                  src={profile.image}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              ) : (
+                <FaRegUserCircle size={32} />
+              )}
             </button>
           </Link>
         </div>

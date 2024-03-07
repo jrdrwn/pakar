@@ -17,8 +17,6 @@ export async function POST(req) {
     file: Buffer.from(await img.arrayBuffer()),
     fileName: img.name,
     folder: process.env.IMAGEKIT_FOLDER,
-    overwriteFile: true,
-    useUniqueFileName: false,
   });
   return NextResponse.json(imagekitRes);
 }
