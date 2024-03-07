@@ -39,13 +39,16 @@ export default function Page() {
   const [cookies, setCookie] = useCookies(["user_id"]);
   const [categoryCount, setCategoryCount] = useState([]);
   const [profile, setProfile] = useState({});
+
   const openModal = () => {
     const modal = document.getElementById("edit-profile-modal");
     modal.showModal();
   };
 
   useEffect(() => {
-    fetch("/api/karya/categories?count=true&limit=10&q=")
+    fetch(
+      `/api/karya/categories?user_id=${cookies.user_id}&count=true&limit=10&q=`,
+    )
       .then((res) => res.json())
       .then((data) => {
         setCategoryCount(data);
@@ -73,7 +76,7 @@ export default function Page() {
   useEffect(() => {
     fetch("/api/profile")
       .then((res) => res.json())
-      .then((data) => setProfile(data[0]));
+      .then((data) => setProfile(data));
     fetch("/api/karya?tag=me")
       .then((res) => res.json())
       .then((data) => {

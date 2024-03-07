@@ -5,6 +5,34 @@ export async function GET(request) {
   const count = request.nextUrl.searchParams.get("count");
   const limit = request.nextUrl.searchParams.get("limit");
   const q = request.nextUrl.searchParams.get("q");
+  const user_id = request.nextUrl.searchParams.get("user_id");
+
+  BigInt.prototype.toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+  };
+
+  if (user_id) {
+    const categories = await prisma.$queryRaw`
+        SELECT categories.name as category, COUNT(categories.name) as count FROM categories
+        JOIN karya ON karya.category_id = categories.category_id
+        WHERE karya.author = ${user_id}
+        GROUP BY categories.name
+        ORDER BY count DESC`;
+
+    return NextResponse.json(
+      categories
+        .map((tag) => {
+          return count
+            ? {
+                category: tag["category"],
+                count: tag["count"],
+              }
+            : tag["category"];
+        })
+        .slice(0, limit),
+    );
+  }
 
   if (count) {
     const categories = await prisma.$queryRaw`
@@ -13,11 +41,6 @@ export async function GET(request) {
         WHERE categories.name LIKE ${`%${q}%`}
         GROUP BY categories.name
         ORDER BY count DESC`;
-
-    BigInt.prototype.toJSON = function () {
-      const int = Number.parseInt(this.toString());
-      return int ?? this.toString();
-    };
 
     return NextResponse.json(
       categories
@@ -45,10 +68,6 @@ export async function GET(request) {
         WHERE name LIKE ${`%${q}%`}
         `;
 
-    BigInt.prototype.toJSON = function () {
-      const int = Number.parseInt(this.toString());
-      return int ?? this.toString();
-    };
     return NextResponse.json(categories);
   }
 }

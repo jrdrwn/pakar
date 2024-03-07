@@ -11,7 +11,7 @@ export default function Page() {
   const [karya, setKarya] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
-  const [cookies, setCookie, removeCookie] = useCookies();
+  const [cookies] = useCookies();
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/karya/categories?q=`)

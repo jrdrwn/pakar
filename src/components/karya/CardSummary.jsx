@@ -77,7 +77,7 @@ export default function CardSummary(props) {
     <>
       <div
         data-karya-id={props.karya_id}
-        className="h-min w-96 max-w-sm cursor-pointer rounded-md p-2 hover:outline hover:outline-1 hover:outline-primary"
+        className="h-min w-96 max-w-sm cursor-pointer rounded-xl bg-base-300 p-2 hover:outline hover:outline-1 hover:outline-primary"
       >
         <div className="relative mb-2 h-60 overflow-hidden rounded-md">
           <details className="dropdown dropdown-end absolute right-2 top-2">
@@ -88,16 +88,20 @@ export default function CardSummary(props) {
               <BsThreeDotsVertical size={20} />
             </summary>
             <ul className="menu dropdown-content menu-xs z-[1] rounded-box bg-base-100  shadow">
-              <li>
-                <button onClick={(e) => openModal(e)}>
-                  <MdOutlineEdit size={20} /> Edit
-                </button>
-              </li>
-              <li>
-                <button onClick={(e) => openModalDelete(e)}>
-                  <MdDeleteOutline size={20} /> Delete{" "}
-                </button>
-              </li>
+              {props.user_id === cookies.user_id && (
+                <>
+                  <li>
+                    <button onClick={(e) => openModal(e)}>
+                      <MdOutlineEdit size={20} /> Edit
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={(e) => openModalDelete(e)}>
+                      <MdDeleteOutline size={20} /> Delete{" "}
+                    </button>
+                  </li>
+                </>
+              )}
               <li>
                 <Link href={`/explore/${props.karya_id}`}>
                   <MdInfo size={20} /> Detail
@@ -128,7 +132,11 @@ export default function CardSummary(props) {
             className="btn btn-ghost btn-xs flex items-center gap-1"
             onClick={handleLike}
           >
-            {isLike ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
+            {isLike ? (
+              <MdFavorite size={18} className="text-accent" />
+            ) : (
+              <MdFavoriteBorder size={18} />
+            )}
             <span className="text-sm">
               {new Intl.NumberFormat("id-ID", {
                 notation: "compact",
