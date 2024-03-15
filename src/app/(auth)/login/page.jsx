@@ -30,7 +30,7 @@ export default function Login() {
     } else {
       const json = await response.json();
       document.cookie = json.cookies;
-      router.push(json.redirect);
+      router.push("/explore");
     }
   };
 

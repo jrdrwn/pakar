@@ -28,7 +28,7 @@ export default function Register() {
     if (!response.ok) {
       alert("Gagal mendaftar!");
     } else {
-      router.push((await response.json()).redirect);
+      router.push("/login");
     }
   };
   const [step, setStep] = useState(1);

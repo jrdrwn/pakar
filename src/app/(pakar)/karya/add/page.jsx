@@ -28,7 +28,7 @@ export default function Page() {
       alert("Gagal menambahkan karya!");
     } else {
       alert("Berhasil menambahkan karya!");
-      router.push((await response.json()).redirect);
+      router.push("/explore");
     }
   };
 
