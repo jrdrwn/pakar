@@ -16,15 +16,15 @@ export default function Page() {
       .then((res) => res.json())
       .then((data) => {
         setKarya(data[0]);
-        setIsLike(Number(data[0].is_user_like));
-        setLikesCount(data[0].likes_count);
+        setIsLike(Number(data[0].is_user_like || data[0].f11));
+        setLikesCount(data[0].likes_count || data[0].f12);
       });
   }, []);
 
   const handleLike = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/karya/${karya?.karya_id}/like`, {
-      method: isLike ? "DELETE" : "PUT",
+    const res = await fetch(`/api/karya/${karya?.karya_id || karya?.f0}/like`, {
+      method: "PUT",
     });
     if (res.ok) {
       setLikesCount(isLike ? likesCount - 1 : likesCount + 1);
@@ -39,18 +39,22 @@ export default function Page() {
             <FaRegUserCircle size={40} />
             <div className="flex flex-col">
               <span className="">
-                {karya?.first_name} {karya?.middle_name} {karya?.last_name}
+                {karya?.first_name || karya?.f7}{" "}
+                {karya?.middle_name || karya?.f8}{" "}
+                {karya?.last_name || karya?.f9}
               </span>
-              <span className="">@{karya?.username}</span>
+              <span className="">@{karya?.username || karya?.f6}</span>
             </div>
           </div>
           <div>
-            <span className="badge badge-primary">{karya?.category}</span>
+            <span className="badge badge-primary">
+              {karya?.category || karya?.f4}
+            </span>
           </div>
         </div>
         <div className="mb-2 h-96 flex-1 overflow-hidden rounded-md ">
           <img
-            src={karya?.image || "https://via.placeholder.com/150"}
+            src={karya?.image || karya?.f3 || "https://via.placeholder.com/150"}
             alt="Karya Image"
             className="w-full object-cover object-center "
           />
@@ -58,8 +62,10 @@ export default function Page() {
         <div className="mb-2 flex justify-between">
           <div className="flex gap-1"></div>
         </div>
-        <div className="mb-4 text-xl font-bold">{karya?.title}</div>
-        <p>{karya?.about}</p>
+        <div className="mb-4 text-xl font-bold">
+          {karya?.title || karya?.f1}
+        </div>
+        <p>{karya?.about || karya?.f2}</p>
         <div className="mt-2 flex justify-between">
           <button
             className="btn btn-ghost btn-xs flex items-center gap-1"
@@ -73,15 +79,6 @@ export default function Page() {
               }).format(likesCount)}
             </span>
           </button>
-          {/* <div className="mt-4 flex items-center gap-1">
-            <MdOutlineVisibility size={18} />
-            <span className="text-sm">
-              {new Intl.NumberFormat("id-ID", {
-                notation: "compact",
-                compactDisplay: "short",
-              }).format(karya?.visitior ?? 0)}
-            </span>
-          </div> */}
         </div>
       </section>
     </main>

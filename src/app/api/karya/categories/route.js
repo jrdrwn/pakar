@@ -13,24 +13,18 @@ export async function GET(request) {
   };
 
   if (user_id) {
-    const categories = await prisma.$queryRaw`
-        SELECT categories.name as category, COUNT(categories.name) as count FROM categories
-        JOIN karya ON karya.category_id = categories.category_id
-        WHERE karya.author = ${user_id}
-        GROUP BY categories.name
-        ORDER BY count DESC`;
+    const categories =
+      await prisma.$queryRaw`CALL my_most_categories(${user_id}, ${limit})`;
 
     return NextResponse.json(
-      categories
-        .map((tag) => {
-          return count
-            ? {
-                category: tag["category"],
-                count: tag["count"],
-              }
-            : tag["category"];
-        })
-        .slice(0, limit),
+      categories.map((tag) => {
+        return count
+          ? {
+              category: tag["category"] || tag["f0"],
+              count: tag["count"] || tag["f1"],
+            }
+          : tag["f1"];
+      }),
     );
   }
 

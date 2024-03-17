@@ -148,9 +148,10 @@ export default function Page() {
       </section>
       <section className="flex min-h-screen flex-wrap justify-evenly gap-8">
         {karya?.map((data) => {
-          if (q === "") return <CardSummary key={data.karya_id} {...data} />;
+          if (q === "")
+            return <CardSummary key={data.karya_id || data.f0} {...data} />;
           if (data.title.toLowerCase().includes(q.toLowerCase()))
-            return <CardSummary key={data.karya_id} {...data} />;
+            return <CardSummary key={data.karya_id || data.f0} {...data} />;
         })}
       </section>
       <div ref={bottom} />

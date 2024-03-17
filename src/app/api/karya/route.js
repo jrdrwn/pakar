@@ -35,46 +35,20 @@ export async function GET(request) {
   const user_id = cookies().get("user_id").value;
   try {
     if (tag === "me") {
-      const karya = await prisma.$queryRaw`
-        SELECT karya.karya_id, title, about, price, karya.image, categories.name as category, users.user_id, username, first_name, middle_name, last_name, users.image as user_image, COUNT(likes.karya_id) as likes_count, SUM(CASE WHEN likes.user_id = ${user_id} THEN 1 ELSE 0 END) as is_user_like
-        FROM karya
-        JOIN users ON karya.author = users.user_id
-        JOIN categories ON karya.category_id = categories.category_id
-        LEFT JOIN likes ON likes.karya_id = karya.karya_id
-        WHERE karya.author = ${user_id}
-        GROUP BY karya.karya_id`;
+      const karya =
+        await prisma.$queryRaw`CALL get_karya_by_user_id(${user_id}, -1, 0)`;
       return NextResponse.json(karya);
     } else if (tag === "" || tag === "null" || tag === "Semua") {
-      const karya = await prisma.$queryRaw`
-        SELECT karya.karya_id, title, about, price, karya.image, categories.name as category, users.user_id, username, first_name, middle_name, last_name, users.image as user_image, COUNT(likes.karya_id) as likes_count, SUM(CASE WHEN likes.user_id = ${user_id} THEN 1 ELSE 0 END) as is_user_like
-        FROM karya
-        JOIN users ON karya.author = users.user_id
-        JOIN categories ON karya.category_id = categories.category_id
-        LEFT JOIN likes ON likes.karya_id = karya.karya_id
-        GROUP BY karya.karya_id
-        LIMIT ${limit} OFFSET ${offset}`;
+      const karya =
+        await prisma.$queryRaw`CALL get_karya(${user_id}, ${limit}, ${offset})`;
       return NextResponse.json(karya);
     } else if (q) {
-      const karya = await prisma.$queryRaw`
-        SELECT karya.karya_id, title, about, price, karya.image, categories.name as category, users.user_id, username, first_name, middle_name, last_name, users.image as user_image, COUNT(likes.karya_id) as likes_count, SUM(CASE WHEN likes.user_id = ${user_id} THEN 1 ELSE 0 END) as is_user_like
-        FROM karya
-        JOIN users ON karya.author = users.user_id
-        JOIN categories ON karya.category_id = categories.category_id
-        LEFT JOIN likes ON likes.karya_id = karya.karya_id
-        WHERE karya.title LIKE ${q}
-        GROUP BY karya.karya_id
-        LIMIT ${limit} OFFSET ${offset}`;
+      const karya =
+        await prisma.$queryRaw`CALL get_karya_by_query(${user_id}, ${q}, ${limit}, ${offset})`;
       return NextResponse.json(karya);
     } else {
-      const karya = await prisma.$queryRaw`
-        SELECT karya.karya_id, title, about, price, karya.image, categories.name as category, users.user_id, username, first_name, middle_name, last_name, users.image as user_image, COUNT(likes.karya_id) as likes_count, SUM(CASE WHEN likes.user_id = ${user_id} THEN 1 ELSE 0 END) as is_user_like
-        FROM karya
-        JOIN users ON karya.author = users.user_id
-        JOIN categories ON karya.category_id = categories.category_id
-        LEFT JOIN likes ON likes.karya_id = karya.karya_id
-        WHERE categories.name = ${tag}
-        GROUP BY karya.karya_id
-        LIMIT ${limit} OFFSET ${offset}`;
+      const karya =
+        await prisma.$queryRaw`CALL get_karya_by_category(${user_id}, ${tag}, ${limit}, ${offset})`;
       return NextResponse.json(karya);
     }
   } catch (error) {

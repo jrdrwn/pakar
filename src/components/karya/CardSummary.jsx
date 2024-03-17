@@ -17,7 +17,9 @@ export default function CardSummary(props) {
     // prevent paren event bubbling
     e.stopPropagation();
     e.preventDefault();
-    const modal = document.getElementById(`edit-karya-modal-${props.karya_id}`);
+    const modal = document.getElementById(
+      `edit-karya-modal-${props.karya_id || props.f0}`,
+    );
     modal.showModal();
   };
   const openModalDelete = (e) => {
@@ -25,14 +27,14 @@ export default function CardSummary(props) {
     e.stopPropagation();
     e.preventDefault();
     const modal = document.getElementById(
-      `delete-karya-modal-${props.karya_id}`,
+      `delete-karya-modal-${props.karya_id || props.f0}`,
     );
     modal.showModal();
   };
   const handleEditKarya = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    const res = await fetch(`/api/karya/${props.karya_id}`, {
+    const res = await fetch(`/api/karya/${props.karya_id || props.f0}`, {
       method: "PUT",
       body: JSON.stringify(Object.fromEntries(data)),
       headers: {
@@ -48,7 +50,7 @@ export default function CardSummary(props) {
   };
   const handleDeleteKarya = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/karya/${props.karya_id}`, {
+    const res = await fetch(`/api/karya/${props.karya_id || props.f0}`, {
       method: "DELETE",
     });
     if (!res.ok) {
@@ -59,12 +61,12 @@ export default function CardSummary(props) {
     }
   };
 
-  const [isLike, setIsLike] = useState(Number(props.is_user_like));
-  const [likesCount, setLikesCount] = useState(props.likes_count);
+  const [isLike, setIsLike] = useState(Number(props.is_user_like || props.f12));
+  const [likesCount, setLikesCount] = useState(props.likes_count || props.f11);
 
   const handleLike = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/karya/${props.karya_id}/like`, {
+    const res = await fetch(`/api/karya/${props.karya_id || props.f0}/like`, {
       method: isLike ? "DELETE" : "PUT",
     });
     if (res.ok) {
@@ -76,7 +78,7 @@ export default function CardSummary(props) {
   return (
     <>
       <div
-        data-karya-id={props.karya_id}
+        data-karya-id={props.karya_id || props.f0}
         className="h-min w-96 max-w-sm cursor-pointer rounded-xl bg-base-300 p-2 hover:outline hover:outline-1 hover:outline-primary"
       >
         <div className="relative mb-2 h-60 overflow-hidden rounded-md">
@@ -88,7 +90,7 @@ export default function CardSummary(props) {
               <BsThreeDotsVertical size={20} />
             </summary>
             <ul className="menu dropdown-content menu-xs z-[1] rounded-box bg-base-100  shadow">
-              {props.user_id === cookies.user_id && (
+              {(props.user_id || props.f5) === cookies.user_id && (
                 <>
                   <li>
                     <button onClick={(e) => openModal(e)}>
@@ -103,37 +105,39 @@ export default function CardSummary(props) {
                 </>
               )}
               <li>
-                <Link href={`/explore/${props.karya_id}`}>
+                <Link href={`/explore/${props.karya_id || props.f0}`}>
                   <MdInfo size={20} /> Detail
                 </Link>
               </li>
             </ul>
           </details>
           <img
-            src={props.image}
-            alt={props.title}
+            src={props.image || props.f3}
+            alt={props.title || props.f1}
             className="w-full object-cover object-center "
           />
         </div>
         <div className="mb-2 flex justify-between">
           <div className="flex items-center gap-1">
-            {props.image ? (
+            {props.image || props.f3 ? (
               <img
-                src={props.user_image}
+                src={props.user_image || props.f10}
                 className="h-5 w-5 rounded-full object-cover "
               />
             ) : (
               <FaRegUserCircle size={20} />
             )}
-            <span className="">@{props.username}</span>
+            <span className="">@{props.username || props.f6}</span>
           </div>
           <div>
             <span className="badge badge-primary badge-outline">
-              {props.category}
+              {props.category || props.f4}
             </span>
           </div>
         </div>
-        <div className="line-clamp-1 text-lg font-medium">{props.title}</div>
+        <div className="line-clamp-1 text-lg font-medium">
+          {props.title || props.f1}
+        </div>
         <div className="mt-2 flex justify-between">
           <button
             className="btn btn-ghost btn-xs flex items-center gap-1"
@@ -162,7 +166,10 @@ export default function CardSummary(props) {
           </div> */}
         </div>
       </div>
-      <dialog id={`delete-karya-modal-${props.karya_id}`} className="modal">
+      <dialog
+        id={`delete-karya-modal-${props.karya_id || props.f0}`}
+        className="modal"
+      >
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
@@ -180,7 +187,10 @@ export default function CardSummary(props) {
           <button>close</button>
         </form>
       </dialog>
-      <dialog id={`edit-karya-modal-${props.karya_id}`} className="modal">
+      <dialog
+        id={`edit-karya-modal-${props.karya_id || props.f0}`}
+        className="modal"
+      >
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
@@ -197,7 +207,7 @@ export default function CardSummary(props) {
                 type="text"
                 name="title"
                 placeholder="Judul Karya"
-                defaultValue={props.title}
+                defaultValue={props.title || props.f1}
                 className="input input-bordered"
               />
             </div>
@@ -209,7 +219,7 @@ export default function CardSummary(props) {
                 type="text"
                 name="cover"
                 placeholder="Link Cover..."
-                defaultValue={props.image.split("|")[0]}
+                defaultValue={props.image || props.f3.split("|")[0]}
                 className="input input-bordered"
               />
             </label>
@@ -222,9 +232,7 @@ export default function CardSummary(props) {
                 defaultValue={props.main_category}
                 className="select select-bordered w-full max-w-xs"
               >
-                <option disabled selected>
-                  Pilih Tag
-                </option>
+                <option disabled>Pilih Tag</option>
                 <option value="projek-mandiri">Projek Mandiri</option>
                 <option value="tugas-mata-kuliah">Tugas Mata Kuliah</option>
                 <option value="tugas-akhir">Tugas Akhir</option>
@@ -239,7 +247,7 @@ export default function CardSummary(props) {
               <textarea
                 name="description"
                 placeholder="Deskripsi Karya"
-                defaultValue={props.about}
+                defaultValue={props.about || props.f2}
                 className="textarea textarea-bordered h-24"
               ></textarea>
             </div>

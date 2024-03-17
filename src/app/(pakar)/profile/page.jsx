@@ -83,7 +83,7 @@ export default function Page() {
     fetch("/api/karya?tag=me")
       .then((res) => res.json())
       .then((data) => {
-        data.sort((a, b) => b.price - a.price);
+        data.sort((a, b) => b.f0 + a.f0);
         setKarya(data);
       });
   }, []);
@@ -91,7 +91,7 @@ export default function Page() {
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
   const filteredItems = karya.filter(
     (item) =>
-      item.title && item.title.toLowerCase().includes(filterText.toLowerCase()),
+      item.f1 && item.f1.toLowerCase().includes(filterText.toLowerCase()),
   );
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -122,7 +122,7 @@ export default function Page() {
   const columns = [
     {
       name: "ID",
-      selector: (row) => row.karya_id,
+      selector: (row) => row.karya_id || row.f0,
       maxWidth: "20px",
       sortable: true,
       center: true,
@@ -132,23 +132,15 @@ export default function Page() {
       name: "Title",
       sortable: true,
       reorder: true,
-      selector: (row) => row.title,
+      selector: (row) => row.title || row.f1,
       maxWidth: "400px",
     },
     {
       name: "About",
       sortable: true,
       reorder: true,
-      selector: (row) => row.about,
+      selector: (row) => row.about || row.f2,
       maxWidth: "400px",
-    },
-    {
-      name: "Price",
-      sortable: true,
-      reorder: true,
-      center: true,
-      selector: (row) => row.price,
-      maxWidth: "100px",
     },
     {
       name: "Image",
@@ -158,7 +150,7 @@ export default function Page() {
       grow: 0,
       cell: (row) => (
         <img
-          src={row.image.split("|")[0]}
+          src={row.f3 || row.image.split("|")[0]}
           alt="Karya Image"
           className="h-10 w-10 object-cover object-center"
         />
@@ -169,7 +161,7 @@ export default function Page() {
       sortable: true,
       reorder: true,
       center: true,
-      selector: (row) => row.category,
+      selector: (row) => row.category || row.f4,
     },
   ];
 

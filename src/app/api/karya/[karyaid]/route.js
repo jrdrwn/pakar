@@ -6,19 +6,7 @@ export async function GET(request, { params }) {
   const { karyaid } = params;
   const user_id = cookies().get("user_id").value;
   try {
-    BigInt.prototype.toJSON = function () {
-      const int = Number.parseInt(this.toString());
-      return int ?? this.toString();
-    };
-    const karya = await prisma.$queryRaw`
-      SELECT karya.karya_id, title, about, price, karya.image, categories.name as category, users.user_id, username, first_name, middle_name, last_name, users.image as user_image, COUNT(likes.karya_id) as likes_count, SUM(CASE WHEN likes.user_id = ${user_id} THEN 1 ELSE 0 END) as is_user_like
-        FROM karya
-        JOIN users ON karya.author = users.user_id
-        JOIN categories ON karya.category_id = categories.category_id
-        LEFT JOIN likes ON likes.karya_id = karya.karya_id
-        WHERE karya.karya_id = ${karyaid}
-        GROUP BY karya.karya_id
-        `;
+    const karya = await prisma.$queryRaw`CALL get_karya_by_id(${karyaid}) `;
 
     return NextResponse.json(karya);
   } catch (error) {

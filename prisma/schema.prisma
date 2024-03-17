@@ -8,49 +8,61 @@ datasource db {
 }
 
 model karya {
-  karya_id    Int        @id @default(autoincrement())
-  about       String?    @db.Text
-  title       String     @db.LongText
-  image       String?    @db.LongText
-  price       String     @default("1")
-  category_id Int        @db.UnsignedInt
+  karya_id    Int           @id @default(autoincrement())
+  about       String?       @db.Text
+  title       String
+  image       String?       @db.Text
+  category_id Int
   author      Int
-  visitor     Int        @default(0)
-  categories  categories @relation(fields: [category_id], references: [category_id], map: "FK_karya_category")
-  user        users      @relation(fields: [author], references: [user_id], map: "Karya_author_fkey")
-  likes       likes[]
+  visitor     Int           @default(0)
+  likes_count Int           @default(0)
+  created_at  DateTime?     @default(dbgenerated("(now())")) @db.DateTime(0)
+  categories  categories    @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_karya_category")
+  user        users         @relation(fields: [author], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "Karya_author_fkey")
+  likes       likes[]       @ignore
+  sneak_peeks sneak_peeks[] @ignore
 
-  @@index([author], map: "Karya_author_fkey")
   @@index([category_id], map: "category_id")
+  @@index([author], map: "author")
 }
 
 model categories {
-  category_id Int     @id @default(autoincrement()) @db.UnsignedInt
-  name        String  @unique(map: "name") @db.VarChar(100)
+  category_id Int     @id @default(autoincrement())
+  name        String  @unique(map: "name")
   karya       karya[]
 }
 
 model users {
   user_id     Int     @id @default(autoincrement())
-  username    String  @unique(map: "User_username_key")
+  username    String
   password    String
   first_name  String
   last_name   String?
   middle_name String?
-  email       String  @unique(map: "User_email_key")
-  image       String? @db.VarChar(256)
+  email       String  @unique(map: "email")
+  image       String? @db.Text
   karya       karya[]
-  likes       likes[]
+  likes       likes[] @ignore
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model likes {
-  like_id  Int   @id @default(autoincrement()) @db.UnsignedInt
   user_id  Int
   karya_id Int
-  karya    karya @relation(fields: [karya_id], references: [karya_id], map: "FK__karya")
-  users    users @relation(fields: [user_id], references: [user_id], map: "FK__users")
+  karya    karya @relation(fields: [karya_id], references: [karya_id], onDelete: NoAction, onUpdate: NoAction, map: "FK__karya")
+  users    users @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK__users")
 
-  @@unique([user_id, karya_id], map: "user_id_karya_id")
   @@index([karya_id], map: "karya_id")
   @@index([user_id], map: "user_id")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model sneak_peeks {
+  karya_id Int
+  image    String? @db.Text
+  karya    karya   @relation(fields: [karya_id], references: [karya_id], onDelete: NoAction, onUpdate: NoAction, map: "sneak_peeks_ibfk_1")
+
+  @@index([karya_id], map: "karya_id")
+  @@ignore
 }
