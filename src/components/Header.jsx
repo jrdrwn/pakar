@@ -7,7 +7,7 @@ import { MdClose, MdMenu } from "react-icons/md";
 export default function Header() {
   const [open, setOpen] = useState(false);
 
-  const links = ["Home", "About", "Services", "FAQ"];
+  const links = ["Home", "About", "Services", "Team", "FAQ"];
   return (
     <header className="fixed inset-x-2 z-50 mt-4 rounded-md border border-primary bg-base-200 shadow-md transition-all">
       <div className="navbar">

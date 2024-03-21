@@ -4,6 +4,7 @@ import About from "../../components/landing/About";
 import FAQ from "../../components/landing/FAQ";
 import Home from "../../components/landing/Home";
 import Service from "../../components/landing/Service";
+import Team from "../../components/landing/Team";
 
 export default function Landing() {
   return (
@@ -11,6 +12,7 @@ export default function Landing() {
       <Home />
       <About />
       <Service />
+      <Team />
       <FAQ />
     </main>
   );
